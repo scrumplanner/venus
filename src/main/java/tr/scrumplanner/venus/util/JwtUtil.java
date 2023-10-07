@@ -17,7 +17,7 @@ import java.util.function.Function;
 
 @UtilityClass
 public class JwtUtil {
-    private String jwtSigningKey = "413F4428472B4B6250655368566D5970337336763979244226452948404D6351";
+    private final String jwtSigningKey = "413F4428472B4B6250655368566D5970337336763979244226452948404D6351";
     public String extractUserName(String token) {
         return extractClaim(token, Claims::getSubject);
     }
