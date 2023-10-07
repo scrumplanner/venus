@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/scrum-planner-db
+    username: postgres
+    password: 123456
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  security:
+    whiteList:
+      /v3/api-docs/*,
+      /v3/api-docs, /swagger-ui/*,
+      /api/v1/auth/signup, /api/v1/auth/login
+springdoc:
+  swagger-ui:
+    persist-authorization: true
