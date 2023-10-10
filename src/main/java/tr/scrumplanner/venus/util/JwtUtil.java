@@ -7,7 +7,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.experimental.UtilityClass;
-import org.springframework.security.core.userdetails.UserDetails;
+import tr.scrumplanner.venus.model.entity.User;
 
 import java.security.Key;
 import java.util.Date;
@@ -27,10 +27,10 @@ public class JwtUtil {
     }
 
     
-    public boolean isTokenValid(String token, UserDetails userDetails) {
+    public boolean isTokenValid(String token, User user) {
         final String userName = extractUserName(token);
 //        return (userName.equals(userDetails.getUsername())) && !isTokenExpired(token);
-        return (userName.equals(userDetails.getUsername()));
+        return (userName.equals(user.getEmail()));
     }
 
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolvers) {

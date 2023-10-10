@@ -1,25 +1,24 @@
 package tr.scrumplanner.venus.security;
 
-import java.io.IOException;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.lang.NonNull;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
-
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.lang.NonNull;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+import tr.scrumplanner.venus.model.entity.User;
 import tr.scrumplanner.venus.service.UserService;
 import tr.scrumplanner.venus.util.JwtUtil;
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 @Component
 @RequiredArgsConstructor
@@ -40,12 +39,11 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         userEmail = JwtUtil.extractUserName(jwt);
         if (StringUtils.isNotEmpty(userEmail)
                 && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userService.userDetailsService()
-                    .loadUserByUsername(userEmail);
-            if (JwtUtil.isTokenValid(jwt, userDetails)) {
+            User user = userService.getUserByEmail(userEmail);
+            if (JwtUtil.isTokenValid(jwt, user)) {
                 SecurityContext context = SecurityContextHolder.createEmptyContext();
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
+                        user.getId(), null, new ArrayList<>());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 context.setAuthentication(authToken);
                 SecurityContextHolder.setContext(context);
