@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
@@ -19,19 +20,26 @@ import tr.scrumplanner.venus.util.JwtUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 @Component
 @RequiredArgsConstructor
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final UserService userService;
+    @Value("${spring.security.whiteList}")
+    private String[] authWhiteList;
+
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
             throws ServletException, IOException {
+
+        String requestURI = request.getRequestURI();
+
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String userEmail;
-        if (StringUtils.isEmpty(authHeader) || !StringUtils.startsWith(authHeader, "Bearer ")) {
+        if (Arrays.stream(authWhiteList).anyMatch(requestURI::startsWith)) {
             filterChain.doFilter(request, response);
             return;
         }
