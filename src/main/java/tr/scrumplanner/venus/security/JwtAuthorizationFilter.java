@@ -4,42 +4,38 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import tr.scrumplanner.venus.model.entity.User;
 import tr.scrumplanner.venus.service.UserService;
 import tr.scrumplanner.venus.util.JwtUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
-@Component
-@RequiredArgsConstructor
-public class JwtAuthorizationFilter extends OncePerRequestFilter {
+public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     private final UserService userService;
-    @Value("${spring.security.whiteList}")
-    private String[] authWhiteList;
+
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserService userService) {
+        super(authenticationManager);
+        this.userService = userService;
+    }
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
-        String requestURI = request.getRequestURI();
-
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String userEmail;
-        if (Arrays.stream(authWhiteList).anyMatch(requestURI::startsWith)) {
+        if (StringUtils.isEmpty(authHeader) || !StringUtils.startsWith(authHeader, "Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }

@@ -58,6 +58,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.setStatus(HttpServletResponse.SC_OK);
         response.getWriter().write(res);
         response.getWriter().flush();
-//        response.getWriter().close();
+        response.getWriter().close();
     }
 }

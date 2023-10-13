@@ -17,7 +17,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -29,14 +28,16 @@ import java.util.List;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfiguration {
-    private final JwtAuthorizationFilter jwtAuthorizationFilter;
     private final UserService userService;
 
     @Value("${spring.security.whiteList}")
     private String[] authWhiteList;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   AuthenticationProvider authenticationProvider,
+                                                   JwtAuthorizationFilter jwtAuthorizationFilter,
+                                                   JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
@@ -47,9 +48,9 @@ public class SecurityConfiguration {
                         .authenticated()
                 )
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilter(jwtAuthenticationFilter());
+                .authenticationProvider(authenticationProvider)
+                .addFilter(jwtAuthenticationFilter)
+                .addFilter(jwtAuthorizationFilter);
 
         return http.build();
     }
@@ -78,15 +79,22 @@ public class SecurityConfiguration {
         corsConfiguration.applyPermitDefaultValues();
         corsConfiguration.setAllowedOrigins(List.of("*"));
         corsConfiguration.setAllowedMethods(allowedMethods);
+        corsConfiguration.setAllowedHeaders(List.of("*"));
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);
         return source;
     }
 
-    public JwtAuthenticationFilter jwtAuthenticationFilter() {
-         var filter = new JwtAuthenticationFilter(authenticationManager(), userService);
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter(AuthenticationManager authenticationManager) {
+         var filter = new JwtAuthenticationFilter(authenticationManager, userService);
          filter.setFilterProcessesUrl("/api/v1/auth/login");
          return filter;
+    }
+
+    @Bean
+    public JwtAuthorizationFilter jwtAuthorizationFilter(AuthenticationManager authenticationManager) {
+        return new JwtAuthorizationFilter(authenticationManager, userService);
     }
 
     private static final List<String> allowedMethods = List.of(
