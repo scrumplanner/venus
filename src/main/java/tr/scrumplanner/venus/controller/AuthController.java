@@ -1,6 +1,7 @@
 package tr.scrumplanner.venus.controller;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import tr.scrumplanner.venus.model.request.LoginRequest;
@@ -22,7 +23,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public void signup(@RequestBody SignupRequest signupRequest) {
+    public void signup(@RequestBody @Valid SignupRequest signupRequest) {
         userService.signup(signupRequest);
     }
 
