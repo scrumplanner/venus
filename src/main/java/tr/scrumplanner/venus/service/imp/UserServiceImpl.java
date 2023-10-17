@@ -1,4 +1,4 @@
-package tr.scrumplanner.venus.service;
+package tr.scrumplanner.venus.service.imp;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -10,6 +10,7 @@ import tr.scrumplanner.venus.model.entity.User;
 import tr.scrumplanner.venus.model.request.SignupRequest;
 import tr.scrumplanner.venus.model.response.UserResponse;
 import tr.scrumplanner.venus.repository.UserRepository;
+import tr.scrumplanner.venus.service.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
