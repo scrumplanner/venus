@@ -12,4 +12,5 @@ public interface UserMapper {
     User toEntity(SignupRequest signupRequest);
     UserResponse toResponse(User user);
     List<UserResponse> toResponse(List<User> user);
+
 }

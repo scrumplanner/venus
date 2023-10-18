@@ -6,19 +6,19 @@ import tr.scrumplanner.venus.model.response.CommunityResponse;
 import java.util.List;
 
 public interface CommunityService {
-    void add(AddCommunityRequest addCommunityRequest);
-    void update(UpdateCommunityRequest updateCommunityRequest);
+    CommunityResponse add(AddCommunityRequest addCommunityRequest);
+    CommunityResponse update(Long id, UpdateCommunityRequest updateCommunityRequest);
     void deleteById(Long id);
     List<CommunityResponse> getAll();
     List<CommunityResponse> getByUserId(Long userId);
     CommunityResponse getById(Long id);
 
-    void addCommunityRole(AddCommunityRoleRequest addCommunityRoleRequest);
-    void updateCommunityRole(UpdateCommunityRoleRequest updateCommunityRoleRequest);
+    CommunityResponse addCommunityRole(AddCommunityRoleRequest addCommunityRoleRequest);
+    CommunityResponse updateCommunityRole(UpdateCommunityRoleRequest updateCommunityRoleRequest);
     void deleteCommunityRole(Long communityId, Long roleId);
 
-    void addCommunityUser(AddCommunityUserRequest addCommunityUserRequest);
-    void updateCommunityUser(UpdateCommunityUserRequest updateCommunityUserRequest);
+    CommunityResponse addCommunityUser(AddCommunityUserRequest addCommunityUserRequest);
+    CommunityResponse updateCommunityUser(UpdateCommunityUserRequest updateCommunityUserRequest);
     void deleteCommunityUser(Long communityId, Long userId);
 
 }

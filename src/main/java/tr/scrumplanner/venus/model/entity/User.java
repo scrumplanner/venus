@@ -18,6 +18,7 @@ import java.util.List;
 @Entity
 @Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 @SQLDelete(sql = "update users set is_deleted = true where id = ?")
+@Where(clause = "is_deleted is not true")
 public class User extends BaseEntity {
     private String email;
     private String password;

@@ -27,7 +27,7 @@ public class AuthController {
         userService.signup(signupRequest);
     }
 
-    @GetMapping("/get-all")
+    @GetMapping("/all")
     public List<UserResponse> getAll() {
         return userService.getAll();
     }
